@@ -1,17 +1,47 @@
 <div class="homepage-container">
   <nav class="left-taskbar">
+    <!-- User Info Section -->
+    <div class="user-info" *ngIf="currentUser">
+      <div class="user-avatar">
+        {{ currentUser.email.charAt(0).toUpperCase() }}
+      </div>
+      <div class="user-details">
+        <p class="user-email">{{ currentUser.email }}</p>
+        <p class="user-status">Logged in</p>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
     <ul class="nav-list">
       <li class="nav-item">
-        <a routerLink="/experience" routerLinkActive="active" class="nav-link">Experience</a>
+        <a routerLink="/dashboard/experience" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">💼</span>
+          Experience
+        </a>
       </li>
       <li class="nav-item">
-        <a routerLink="/bullets" routerLinkActive="active" class="nav-link">Bullets</a>
+        <a routerLink="/dashboard/bullets" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">📝</span>
+          Bullets
+        </a>
       </li>
       <li class="nav-item">
-        <a routerLink="/jobs" routerLinkActive="active" class="nav-link">Jobs</a>
+        <a routerLink="/dashboard/jobs" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">🎯</span>
+          Jobs
+        </a>
       </li>
     </ul>
+
+    <!-- Logout Button -->
+    <div class="logout-section">
+      <button (click)="logout()" class="logout-button">
+        <span class="nav-icon">🚪</span>
+        Logout
+      </button>
+    </div>
   </nav>
+
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
