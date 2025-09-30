@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, map, tap } from 'rxjs/operators';
+import { delay, map, tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: number;
@@ -25,7 +27,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.loadSessionFromStorage();
   }
 
@@ -47,8 +49,18 @@ export class AuthService {
    * Login user with credentials
    */
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-    // TODO: Replace this mock implementation with actual API call
-    return this.mockLogin(credentials).pipe(
+    return this.http.post<any>(`${environment.apiUrl}/auth/login`, credentials).pipe(
+      map(response => {
+        // Backend returns: {success: true, token, user}
+        // We need to extract the user and token
+        if (!response.success) {
+          throw new Error(response.error || 'Login failed');
+        }
+        return {
+          user: response.user,
+          token: response.token
+        } as AuthResponse;
+      }),
       tap(response => {
         this.setSession(response);
       })
@@ -68,13 +80,26 @@ export class AuthService {
   isSessionValid(): Observable<boolean> {
     // Check if we have a stored session
     const session = this.getStoredSession();
-    if (!session) {
+    if (!session || !this.isSessionNotExpired(session)) {
       return of(false);
     }
 
-    // TODO: Add actual token validation with backend
-    // For now, just check if session exists
-    return of(true);
+    // Validate token with backend
+    return this.http.get<any>(`${environment.apiUrl}/auth/me`).pipe(
+      map(response => {
+        // Backend returns: {success: true, user}
+        if (response.success && response.user) {
+          // Update current user data
+          this.currentUserSubject.next(response.user);
+          return true;
+        }
+        return false;
+      }),
+      catchError(() => {
+        this.clearSession();
+        return of(false);
+      })
+    );
   }
 
   /**
