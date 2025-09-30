@@ -24,7 +24,7 @@ SELECT
     ROW_NUMBER() OVER (ORDER BY id) as user_number
 FROM users
 ORDER BY id
-LIMIT 5;
+LIMIT 6;
 
 -- Insert bullets using dynamic user IDs based on email addresses
 -- User 1 (john.doe@email.com or first user)
@@ -72,6 +72,15 @@ SELECT id, bullet_text FROM user_mapping, (VALUES
 ) AS bullets(bullet_text)
 WHERE user_number = 5;
 
+-- User 5 (david.brown@email.com or fifth user)
+INSERT INTO bullets (user_id, text)
+SELECT id, bullet_text FROM user_mapping, (VALUES
+    ('Developed machine learning models for predictive analytics and data insights'),
+    ('Created data pipelines processing terabytes of data daily'),
+    ('Presented technical findings to stakeholders and executive leadership team')
+) AS bullets(bullet_text)
+WHERE user_number = 6;
+
 -- Additional bullets that could be reused across different resumes/experiences
 -- Distribute these across all available users
 INSERT INTO bullets (user_id, text)
@@ -82,7 +91,7 @@ SELECT id, bullet_text FROM user_mapping, (VALUES
     ('Implemented security best practices and conducted vulnerability assessments'),
     ('Optimized application performance through profiling and load testing')
 ) AS bullets(bullet_text)
-WHERE user_number <= 5;
+WHERE user_number <= 6;
 
 -- Show summary of what was inserted
 DO $$

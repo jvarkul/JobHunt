@@ -48,6 +48,8 @@ echo -e "${BLUE}🗑️  Dropping existing tables...${NC}"
 
 DROP_SQL="
 -- Drop tables in reverse order due to foreign key constraints
+DROP TABLE IF EXISTS experience_bullets CASCADE;
+DROP TABLE IF EXISTS experience CASCADE;
 DROP TABLE IF EXISTS bullets CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
@@ -87,3 +89,5 @@ echo -e "${YELLOW}📊 Your database now contains:${NC}"
 echo -e "   • Fresh table structure"
 echo -e "   • 5 test users"
 echo -e "   • 20 sample bullet points"
+echo -e "   • 50 sample work experiences"
+echo -e "   • Experience-bullet associations"
