@@ -8,6 +8,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const bulletsRoutes = require('./routes/bullets');
 const experienceRoutes = require('./routes/experience');
+const jobsRoutes = require('./routes/jobs');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -48,6 +49,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/bullets', bulletsRoutes);
 app.use('/api/experience', experienceRoutes);
+app.use('/api/jobs', jobsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
