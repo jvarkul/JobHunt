@@ -8,6 +8,21 @@
   <div class="form-section">
     <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="job-form">
       <div class="form-group">
+        <label for="new-job-company" class="form-label">Company Name *</label>
+        <input
+          id="new-job-company"
+          type="text"
+          formControlName="company_name"
+          placeholder="Enter company name..."
+          class="form-input"
+          [class.error]="isFieldInvalid(jobForm, 'company_name')"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid(jobForm, 'company_name')">
+          {{ getFieldError(jobForm, 'company_name') }}
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="new-job-description" class="form-label">Job Description *</label>
         <textarea
           id="new-job-description"
@@ -86,6 +101,10 @@
       >
         <!-- View Mode -->
         <div *ngIf="editingJob?.id !== job.id" class="job-content">
+          <div class="job-header">
+            <h3 class="company-name">{{ job.company_name }}</h3>
+          </div>
+
           <div class="job-description">
             <div *ngIf="!isDescriptionExpanded(job.id)" class="description-preview">
               {{ getPreviewText(job.description) }}
@@ -129,6 +148,20 @@
         <!-- Edit Mode -->
         <div *ngIf="editingJob?.id === job.id" class="job-edit">
           <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">
+            <div class="form-group">
+              <label class="form-label">Company Name *</label>
+              <input
+                type="text"
+                formControlName="company_name"
+                class="form-input"
+                [class.error]="isFieldInvalid(editForm, 'company_name')"
+                placeholder="Enter company name..."
+              />
+              <div class="error-message" *ngIf="isFieldInvalid(editForm, 'company_name')">
+                {{ getFieldError(editForm, 'company_name') }}
+              </div>
+            </div>
+
             <div class="form-group">
               <label class="form-label">Job Description *</label>
               <textarea

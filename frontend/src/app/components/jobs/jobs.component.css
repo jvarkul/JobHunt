@@ -247,6 +247,17 @@
   gap: 12px;
 }
 
+.job-header {
+  margin-bottom: 4px;
+}
+
+.company-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
 .job-description {
   font-size: 16px;
   line-height: 1.6;

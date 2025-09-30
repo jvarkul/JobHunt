@@ -4,6 +4,7 @@
 CREATE TABLE jobs (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     application_link TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -18,6 +19,7 @@ CREATE TABLE jobs (
 
 -- Create indexes for better performance
 CREATE INDEX idx_jobs_user_id ON jobs(user_id);
+CREATE INDEX idx_jobs_company_name ON jobs(company_name);
 
 -- Add trigger to automatically update updated_at timestamp
 CREATE TRIGGER update_jobs_updated_at

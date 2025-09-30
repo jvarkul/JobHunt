@@ -4,6 +4,7 @@ class Job {
   constructor(jobData) {
     this.id = jobData.id;
     this.user_id = jobData.user_id;
+    this.company_name = jobData.company_name;
     this.description = jobData.description;
     this.application_link = jobData.application_link;
     this.created_at = jobData.created_at;
@@ -12,13 +13,13 @@ class Job {
 
   // Create a new job
   static async create(jobData) {
-    const { user_id, description, application_link } = jobData;
+    const { user_id, company_name, description, application_link } = jobData;
 
     const result = await query(
-      `INSERT INTO jobs (user_id, description, application_link)
-       VALUES ($1, $2, $3)
+      `INSERT INTO jobs (user_id, company_name, description, application_link)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [user_id, description, application_link || null]
+      [user_id, company_name, description, application_link || null]
     );
 
     return new Job(result.rows[0]);
@@ -90,14 +91,14 @@ class Job {
 
   // Update job
   async update(updateData) {
-    const { description, application_link } = updateData;
+    const { company_name, description, application_link } = updateData;
 
     const result = await query(
       `UPDATE jobs
-       SET description = $1, application_link = $2, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $3
+       SET company_name = $1, description = $2, application_link = $3, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $4
        RETURNING *`,
-      [description, application_link || null, this.id]
+      [company_name, description, application_link || null, this.id]
     );
 
     if (result.rows.length === 0) {
@@ -123,6 +124,7 @@ class Job {
     return {
       id: this.id,
       user_id: this.user_id,
+      company_name: this.company_name,
       description: this.description,
       application_link: this.application_link,
       created_at: this.created_at,
@@ -130,13 +132,13 @@ class Job {
     };
   }
 
-  // Search jobs by description content
+  // Search jobs by company name or description content
   static async search(userId, searchTerm, options = {}) {
     const { limit = 50, offset = 0 } = options;
 
     const result = await query(
       `SELECT * FROM jobs
-       WHERE user_id = $1 AND description ILIKE $2
+       WHERE user_id = $1 AND (company_name ILIKE $2 OR description ILIKE $2)
        ORDER BY updated_at DESC
        LIMIT $3 OFFSET $4`,
       [userId, `%${searchTerm}%`, limit, offset]
