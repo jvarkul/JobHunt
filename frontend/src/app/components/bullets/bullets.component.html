@@ -1,8 +1,117 @@
-<h1>Bullets</h1>
-<div class="flex flex-col gap-2 w-full">
-        <input id="new-bullet-input" type="text" placeholder="Bullet Point..." class="border rounded p-2">
-        <button id="add-bullet-button" type="submit" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">Add Bullet</button>
-</div>
+<div class="bullets-container">
+  <div class="header">
+    <h1 class="page-title">Bullet Points</h1>
+    <p class="page-subtitle">Create and manage bullet points for your resume and applications</p>
+  </div>
 
-<ul id="bullets-list" class="list-disc pl-5 mt-4">
-    <!-- Bullet points will be dynamically added here -->
+  <!-- Add New Bullet Form -->
+  <div class="form-section">
+    <form [formGroup]="bulletForm" (ngSubmit)="onSubmit()" class="bullet-form">
+      <div class="form-group">
+        <label for="new-bullet-input" class="form-label">New Bullet Point</label>
+        <textarea
+          id="new-bullet-input"
+          formControlName="text"
+          placeholder="Enter your accomplishment or skill bullet point..."
+          class="form-textarea"
+          [class.error]="isFieldInvalid(bulletForm, 'text')"
+          rows="3"
+        ></textarea>
+        <div class="error-message" *ngIf="isFieldInvalid(bulletForm, 'text')">
+          {{ getFieldError(bulletForm, 'text') }}
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isSubmitting || bulletForm.invalid"
+        [class.loading]="isSubmitting"
+      >
+        <span *ngIf="!isSubmitting">Add Bullet Point</span>
+        <span *ngIf="isSubmitting" class="loading-content">
+          <span class="spinner"></span>
+          Adding...
+        </span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message global-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Bullets List -->
+  <div class="bullets-section">
+    <div class="section-header">
+      <h2 class="section-title">Your Bullet Points</h2>
+      <span class="bullet-count" *ngIf="bullets.length > 0">{{ bullets.length }} bullet{{ bullets.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner large"></div>
+      <p>Loading your bullet points...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && bullets.length === 0" class="empty-state">
+      <div class="empty-icon">📝</div>
+      <h3>No bullet points yet</h3>
+      <p>Create your first bullet point to get started with building your resume content.</p>
+    </div>
+
+    <!-- Bullets List -->
+    <div *ngIf="!isLoading && bullets.length > 0" class="bullets-list">
+      <div
+        *ngFor="let bullet of bullets; trackBy: trackByBulletId"
+        class="bullet-item"
+        [class.editing]="editingBullet?.id === bullet.id"
+      >
+        <!-- View Mode -->
+        <div *ngIf="editingBullet?.id !== bullet.id" class="bullet-content">
+          <div class="bullet-text">{{ bullet.text }}</div>
+          <div class="bullet-meta">
+            <span class="bullet-date">Updated {{ formatDate(bullet.updated_at) }}</span>
+          </div>
+          <div class="bullet-actions">
+            <button (click)="startEdit(bullet)" class="action-button edit">
+              <span class="icon">✏️</span>
+              Edit
+            </button>
+            <button (click)="deleteBullet(bullet)" class="action-button delete">
+              <span class="icon">🗑️</span>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <div *ngIf="editingBullet?.id === bullet.id" class="bullet-edit">
+          <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">
+            <div class="form-group">
+              <textarea
+                formControlName="text"
+                class="form-textarea"
+                [class.error]="isFieldInvalid(editForm, 'text')"
+                rows="3"
+              ></textarea>
+              <div class="error-message" *ngIf="isFieldInvalid(editForm, 'text')">
+                {{ getFieldError(editForm, 'text') }}
+              </div>
+            </div>
+            <div class="edit-actions">
+              <button type="submit" class="action-button save" [disabled]="editForm.invalid">
+                Save
+              </button>
+              <button type="button" (click)="cancelEdit()" class="action-button cancel">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
