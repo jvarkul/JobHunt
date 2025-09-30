@@ -2,18 +2,18 @@
   <!-- Header -->
   <div class="header">
     <div class="header-info">
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">Work Experience</h1>
+      <h1 class="page-title">Work Experience</h1>
       <div class="stats-summary" *ngIf="!isLoading && experiences.length > 0">
-        <span class="stat-item">{{ getExperienceStats().total }} Total</span>
-        <span class="stat-item">{{ getExperienceStats().current }} Current</span>
-        <span class="stat-item">{{ getTotalBullets() }} Bullets</span>
+        <span class="stat-item">{{ getExperienceStats().total }} Experience</span>
+        <!-- <span class="stat-item">{{ getExperienceStats().current }} Current</span> -->
+        
       </div>
     </div>
 
     <!-- Add Experience Button -->
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-primary mt-4"
       (click)="showCreateForm()"
       [disabled]="showForm">
       + Add Experience
@@ -35,7 +35,7 @@
   <div class="form-container" *ngIf="showForm">
     <div class="form-card">
       <div class="form-header">
-        <h2 class="text-lg font-semibold text-gray-800">Add New Experience</h2>
+        <h2 class="form-title">Add New Experience</h2>
         <button type="button" class="btn-close" (click)="hideForm()">×</button>
       </div>
 
@@ -156,8 +156,9 @@
             <p class="company-name">{{ experience.company_name }}</p>
             <div class="date-info">
               <span class="date-range">{{ formatDateRange(experience) }}</span>
+              <!-- <span class="current-badge" *ngIf="experience.isCurrentlyWorkingHere">Current</span> -->
               <span class="duration">{{ calculateDuration(experience) }}</span>
-              <span class="current-badge" *ngIf="experience.isCurrentlyWorkingHere">Current</span>
+              <span class="duration">{{ getBulletCount(experience) }} Bullets</span>
             </div>
           </div>
 
@@ -165,17 +166,17 @@
           <div class="experience-actions">
             <button
               type="button"
-              class="btn-icon btn-edit"
+              class="action-button edit"
               (click)="startEdit(experience)"
               title="Edit experience">
-              ✏️
+              ✏️ Edit
             </button>
             <button
               type="button"
-              class="btn-icon btn-delete"
+              class="action-button delete"
               (click)="deleteExperience(experience)"
               title="Delete experience">
-              🗑️
+              🗑️ Delete
             </button>
           </div>
         </div>
@@ -213,7 +214,7 @@
 
           <!-- Empty Bullets State -->
           <div class="empty-bullets" *ngIf="experience.bullets.length === 0">
-            <p class="text-gray-500">No bullets associated with this experience.</p>
+            <p>No bullets associated with this experience.</p>
           </div>
 
           <!-- Bullet Selector -->
@@ -236,7 +237,7 @@
               </div>
 
               <div class="no-bullets" *ngIf="getUnassociatedBullets(experience.id).length === 0">
-                <p class="text-gray-500">All available bullets are already associated with this experience.</p>
+                <p>All available bullets are already associated with this experience.</p>
               </div>
             </div>
           </div>
@@ -246,7 +247,7 @@
       <!-- Edit Mode -->
       <div class="experience-edit" *ngIf="editingExperience?.id === experience.id">
         <div class="edit-header">
-          <h3 class="text-lg font-semibold">Edit Experience</h3>
+          <h3 class="form-title">Edit Experience</h3>
         </div>
 
         <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">

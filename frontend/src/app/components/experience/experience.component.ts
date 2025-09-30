@@ -377,6 +377,10 @@ export class ExperienceComponent implements OnInit, OnDestroy {
     return this.experiences.reduce((total, exp) => total + exp.bullets.length, 0);
   }
 
+  getBulletCount(experience: ExperienceWithBullets): number {
+    return experience.bullets.length;
+  }
+
   getExperienceStats(): { total: number; current: number; past: number } {
     const total = this.experiences.length;
     const current = this.experiences.filter(exp => exp.isCurrentlyWorkingHere).length;
