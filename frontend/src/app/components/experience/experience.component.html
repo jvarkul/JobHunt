@@ -1,18 +1,339 @@
-<h1 class="text-xl font-bold mb-4">Experience</h1>
+<div class="experience-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-info">
+      <h1 class="page-title">Work Experience</h1>
+      <div class="stats-summary" *ngIf="!isLoading && experiences.length > 0">
+        <span class="stat-item">{{ getExperienceStats().total }} Experience</span>
+        <!-- <span class="stat-item">{{ getExperienceStats().current }} Current</span> -->
+        
+      </div>
+    </div>
 
-<div class="flex flex-col gap-2 w-64">
-  <!-- <form class="flex flex-col gap-2"> -->
-    <input type="text" placeholder="Job Title..." class="border rounded p-2">
-    <input type="text" placeholder="Company Name..." class="border rounded p-2">
-    <input type="text" placeholder="Location..." class="border rounded p-2">
+    <!-- Add Experience Button -->
+    <button
+      type="button"
+      class="btn btn-primary mt-4"
+      (click)="showCreateForm()"
+      [disabled]="showForm">
+      + Add Experience
+    </button>
+  </div>
 
-    <!-- Checkbox with label stacked -->
-    <label class="flex items-center gap-2">
-      <input type="checkbox" class="w-4 h-4">
-      <span>Currently Working Here</span>
-    </label>
+  <!-- Global Error Message -->
+  <div class="error-message global-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
 
-    <input type="text" placeholder="Start Date..." class="border rounded p-2">
-    <input type="text" placeholder="End Date..." class="border rounded p-2">
-  <!-- </form> -->
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading experiences...</p>
+  </div>
+
+  <!-- Create Experience Form -->
+  <div class="form-container" *ngIf="showForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2 class="form-title">Add New Experience</h2>
+        <button type="button" class="btn-close" (click)="hideForm()">×</button>
+      </div>
+
+      <form [formGroup]="experienceForm" (ngSubmit)="onSubmit()" class="experience-form">
+        <!-- Company Name -->
+        <div class="form-group">
+          <label for="company_name" class="form-label">Company Name</label>
+          <input
+            type="text"
+            id="company_name"
+            formControlName="company_name"
+            class="form-input"
+            [class.error]="isFieldInvalid(experienceForm, 'company_name')"
+            placeholder="Enter company name">
+          <div class="error-message" *ngIf="isFieldInvalid(experienceForm, 'company_name')">
+            {{ getFieldError(experienceForm, 'company_name') }}
+          </div>
+        </div>
+
+        <!-- Job Title -->
+        <div class="form-group">
+          <label for="job_title" class="form-label">Job Title</label>
+          <input
+            type="text"
+            id="job_title"
+            formControlName="job_title"
+            class="form-input"
+            [class.error]="isFieldInvalid(experienceForm, 'job_title')"
+            placeholder="Enter job title">
+          <div class="error-message" *ngIf="isFieldInvalid(experienceForm, 'job_title')">
+            {{ getFieldError(experienceForm, 'job_title') }}
+          </div>
+        </div>
+
+        <!-- Date Fields Row -->
+        <div class="date-row">
+          <!-- Start Date -->
+          <div class="form-group flex-1">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input
+              type="date"
+              id="start_date"
+              formControlName="start_date"
+              class="form-input"
+              [class.error]="isFieldInvalid(experienceForm, 'start_date')">
+            <div class="error-message" *ngIf="isFieldInvalid(experienceForm, 'start_date')">
+              {{ getFieldError(experienceForm, 'start_date') }}
+            </div>
+          </div>
+
+          <!-- End Date -->
+          <div class="form-group flex-1">
+            <label for="end_date" class="form-label">End Date</label>
+            <input
+              type="date"
+              id="end_date"
+              formControlName="end_date"
+              class="form-input"
+              [class.error]="isFieldInvalid(experienceForm, 'end_date')"
+              [disabled]="experienceForm.get('isCurrentlyWorkingHere')?.value">
+            <div class="error-message" *ngIf="isFieldInvalid(experienceForm, 'end_date')">
+              {{ getFieldError(experienceForm, 'end_date') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Currently Working Checkbox -->
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              formControlName="isCurrentlyWorkingHere"
+              class="checkbox">
+            <span class="checkbox-text">I currently work here</span>
+          </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="hideForm()">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isSubmitting || experienceForm.invalid">
+            <span *ngIf="!isSubmitting">Add Experience</span>
+            <span *ngIf="isSubmitting" class="loading-content">
+              <span class="spinner-sm"></span>
+              Adding...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Experiences List -->
+  <div class="experiences-list" *ngIf="!isLoading">
+    <div class="empty-state" *ngIf="experiences.length === 0">
+      <div class="empty-icon">💼</div>
+      <h3>No Work Experience Added</h3>
+      <p>Add your first work experience to get started.</p>
+    </div>
+
+    <!-- Experience Cards -->
+    <div
+      class="experience-card"
+      *ngFor="let experience of experiences; trackBy: trackByExperienceId"
+      [class.editing]="editingExperience?.id === experience.id">
+
+      <!-- View Mode -->
+      <div class="experience-view" *ngIf="editingExperience?.id !== experience.id">
+        <!-- Experience Header -->
+        <div class="experience-header">
+          <div class="experience-info">
+            <h3 class="job-title">{{ experience.job_title }}</h3>
+            <p class="company-name">{{ experience.company_name }}</p>
+            <div class="date-info">
+              <span class="date-range">{{ formatDateRange(experience) }}</span>
+              <!-- <span class="current-badge" *ngIf="experience.isCurrentlyWorkingHere">Current</span> -->
+              <span class="duration">{{ calculateDuration(experience) }}</span>
+              <span class="duration">{{ getBulletCount(experience) }} Bullets</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="experience-actions">
+            <button
+              type="button"
+              class="action-button edit"
+              (click)="startEdit(experience)"
+              title="Edit experience">
+              ✏️ Edit
+            </button>
+            <button
+              type="button"
+              class="action-button delete"
+              (click)="deleteExperience(experience)"
+              title="Delete experience">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Associated Bullets -->
+        <div class="bullets-section">
+          <div class="bullets-header">
+            <h4 class="bullets-title">Key Achievements ({{ experience.bullets.length }})</h4>
+            <button
+              type="button"
+              class="btn-sm btn-secondary"
+              (click)="toggleBulletSelector(experience.id)">
+              {{ showBulletSelector[experience.id] ? 'Hide' : 'Add' }} Bullets
+            </button>
+          </div>
+
+          <!-- Bullet List -->
+          <div class="bullets-list" *ngIf="experience.bullets.length > 0">
+            <div
+              class="bullet-item"
+              *ngFor="let bullet of experience.bullets; trackBy: trackByBulletId">
+              <div class="bullet-content">
+                <span class="bullet-text">{{ bullet.text }}</span>
+              </div>
+              <button
+                type="button"
+                class="btn-icon btn-remove"
+                (click)="removeBulletFromExperience(experience.id, bullet.id)"
+                [disabled]="bulletAssociationLoading[experience.id]"
+                title="Remove bullet">
+                ×
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty Bullets State -->
+          <div class="empty-bullets" *ngIf="experience.bullets.length === 0">
+            <p>No bullets associated with this experience.</p>
+          </div>
+
+          <!-- Bullet Selector -->
+          <div class="bullet-selector" *ngIf="showBulletSelector[experience.id]">
+            <h5 class="selector-title">Available Bullets</h5>
+            <div class="available-bullets">
+              <div
+                class="available-bullet"
+                *ngFor="let bullet of getUnassociatedBullets(experience.id); trackBy: trackByBulletId">
+                <div class="bullet-preview">
+                  <span class="bullet-text">{{ bullet.text }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="btn-sm btn-primary"
+                  (click)="addBulletToExperience(experience.id, bullet.id)"
+                  [disabled]="bulletAssociationLoading[experience.id]">
+                  Add
+                </button>
+              </div>
+
+              <div class="no-bullets" *ngIf="getUnassociatedBullets(experience.id).length === 0">
+                <p>All available bullets are already associated with this experience.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div class="experience-edit" *ngIf="editingExperience?.id === experience.id">
+        <div class="edit-header">
+          <h3 class="form-title">Edit Experience</h3>
+        </div>
+
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">
+          <!-- Company Name -->
+          <div class="form-group">
+            <label for="edit_company_name" class="form-label">Company Name</label>
+            <input
+              type="text"
+              id="edit_company_name"
+              formControlName="company_name"
+              class="form-input"
+              [class.error]="isFieldInvalid(editForm, 'company_name')">
+            <div class="error-message" *ngIf="isFieldInvalid(editForm, 'company_name')">
+              {{ getFieldError(editForm, 'company_name') }}
+            </div>
+          </div>
+
+          <!-- Job Title -->
+          <div class="form-group">
+            <label for="edit_job_title" class="form-label">Job Title</label>
+            <input
+              type="text"
+              id="edit_job_title"
+              formControlName="job_title"
+              class="form-input"
+              [class.error]="isFieldInvalid(editForm, 'job_title')">
+            <div class="error-message" *ngIf="isFieldInvalid(editForm, 'job_title')">
+              {{ getFieldError(editForm, 'job_title') }}
+            </div>
+          </div>
+
+          <!-- Date Fields -->
+          <div class="date-row">
+            <div class="form-group flex-1">
+              <label for="edit_start_date" class="form-label">Start Date</label>
+              <input
+                type="date"
+                id="edit_start_date"
+                formControlName="start_date"
+                class="form-input"
+                [class.error]="isFieldInvalid(editForm, 'start_date')">
+              <div class="error-message" *ngIf="isFieldInvalid(editForm, 'start_date')">
+                {{ getFieldError(editForm, 'start_date') }}
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="edit_end_date" class="form-label">End Date</label>
+              <input
+                type="date"
+                id="edit_end_date"
+                formControlName="end_date"
+                class="form-input"
+                [class.error]="isFieldInvalid(editForm, 'end_date')"
+                [disabled]="editForm.get('isCurrentlyWorkingHere')?.value">
+              <div class="error-message" *ngIf="isFieldInvalid(editForm, 'end_date')">
+                {{ getFieldError(editForm, 'end_date') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Currently Working Checkbox -->
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                formControlName="isCurrentlyWorkingHere"
+                class="checkbox">
+              <span class="checkbox-text">I currently work here</span>
+            </label>
+          </div>
+
+          <!-- Edit Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="editForm.invalid">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
