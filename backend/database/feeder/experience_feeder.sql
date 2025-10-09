@@ -18,7 +18,7 @@ END $$;
 
 -- Create sample experiences for existing users
 WITH user_ids AS (
-    SELECT id FROM users LIMIT 6
+    SELECT id FROM users LIMIT 5
 ),
 sample_experiences AS (
     SELECT

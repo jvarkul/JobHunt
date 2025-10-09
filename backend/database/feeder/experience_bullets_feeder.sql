@@ -122,7 +122,7 @@ BEGIN
         JOIN experience e ON eb.experience_id = e.id
         JOIN bullets b ON eb.bullet_id = b.id
         ORDER BY eb.created_at DESC
-        LIMIT 6
+        LIMIT 5
     LOOP
         RAISE NOTICE '% at %: "%"', sample_record.job_title, sample_record.company_name, LEFT(sample_record.text, 50) || CASE WHEN LENGTH(sample_record.text) > 50 THEN '...' ELSE '' END;
     END LOOP;

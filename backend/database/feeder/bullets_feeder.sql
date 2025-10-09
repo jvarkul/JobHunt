@@ -91,7 +91,7 @@ SELECT id, bullet_text FROM user_mapping, (VALUES
     ('Implemented security best practices and conducted vulnerability assessments'),
     ('Optimized application performance through profiling and load testing')
 ) AS bullets(bullet_text)
-WHERE user_number <= 6;
+WHERE user_number <= 5;
 
 -- Show summary of what was inserted
 DO $$
