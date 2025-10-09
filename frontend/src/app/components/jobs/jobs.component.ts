@@ -44,12 +44,14 @@ export class JobsComponent implements OnInit, OnDestroy {
   private initializeForms(): void {
     this.jobForm = this.formBuilder.group({
       company_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
+      job_title: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(2000)]],
       application_link: ['', [Validators.pattern(/^https?:\/\/.+/)]]
     });
 
     this.editForm = this.formBuilder.group({
       company_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
+      job_title: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(2000)]],
       application_link: ['', [Validators.pattern(/^https?:\/\/.+/)]]
     });
@@ -85,6 +87,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     const jobData = {
       company_name: this.jobForm.value.company_name.trim(),
+      job_title: this.jobForm.value.job_title.trim(),
       description: this.jobForm.value.description.trim(),
       application_link: this.jobForm.value.application_link?.trim() || undefined
     };
@@ -109,6 +112,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     this.editingJob = job;
     this.editForm.patchValue({
       company_name: job.company_name,
+      job_title: job.job_title,
       description: job.description,
       application_link: job.application_link || ''
     });
@@ -127,6 +131,7 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     const jobData = {
       company_name: this.editForm.value.company_name.trim(),
+      job_title: this.editForm.value.job_title.trim(),
       description: this.editForm.value.description.trim(),
       application_link: this.editForm.value.application_link?.trim() || undefined
     };

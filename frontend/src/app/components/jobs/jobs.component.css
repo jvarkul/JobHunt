@@ -248,13 +248,20 @@
 }
 
 .job-header {
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 .company-name {
   font-size: 18px;
   font-weight: 600;
   color: #1a202c;
+  margin: 0 0 4px 0;
+}
+
+.job-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #667eea;
   margin: 0;
 }
 

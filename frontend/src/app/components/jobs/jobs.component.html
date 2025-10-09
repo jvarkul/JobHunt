@@ -23,6 +23,21 @@
       </div>
 
       <div class="form-group">
+        <label for="new-job-title" class="form-label">Job Title *</label>
+        <input
+          id="new-job-title"
+          type="text"
+          formControlName="job_title"
+          placeholder="Enter job title (e.g., Senior Software Engineer)..."
+          class="form-input"
+          [class.error]="isFieldInvalid(jobForm, 'job_title')"
+        />
+        <div class="error-message" *ngIf="isFieldInvalid(jobForm, 'job_title')">
+          {{ getFieldError(jobForm, 'job_title') }}
+        </div>
+      </div>
+
+      <div class="form-group">
         <label for="new-job-description" class="form-label">Job Description *</label>
         <textarea
           id="new-job-description"
@@ -103,6 +118,7 @@
         <div *ngIf="editingJob?.id !== job.id" class="job-content">
           <div class="job-header">
             <h3 class="company-name">{{ job.company_name }}</h3>
+            <p class="job-title">{{ job.job_title }}</p>
           </div>
 
           <div class="job-description">
@@ -159,6 +175,20 @@
               />
               <div class="error-message" *ngIf="isFieldInvalid(editForm, 'company_name')">
                 {{ getFieldError(editForm, 'company_name') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Title *</label>
+              <input
+                type="text"
+                formControlName="job_title"
+                class="form-input"
+                [class.error]="isFieldInvalid(editForm, 'job_title')"
+                placeholder="Enter job title..."
+              />
+              <div class="error-message" *ngIf="isFieldInvalid(editForm, 'job_title')">
+                {{ getFieldError(editForm, 'job_title') }}
               </div>
             </div>
 

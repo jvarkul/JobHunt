@@ -101,6 +101,11 @@ router.post('/', [
     .isLength({ min: 2, max: 255 })
     .withMessage('Company name must be between 2 and 255 characters')
     .trim(),
+  body('job_title')
+    .notEmpty()
+    .isLength({ min: 2, max: 255 })
+    .withMessage('Job title must be between 2 and 255 characters')
+    .trim(),
   body('description')
     .notEmpty()
     .isLength({ min: 3, max: 2000 })
@@ -123,12 +128,13 @@ router.post('/', [
       });
     }
 
-    const { company_name, description, application_link } = req.body;
+    const { company_name, job_title, description, application_link } = req.body;
     const userId = req.user.id;
 
     const job = await Job.create({
       user_id: userId,
       company_name,
+      job_title,
       description,
       application_link
     });
@@ -150,6 +156,11 @@ router.put('/:id', [
     .notEmpty()
     .isLength({ min: 2, max: 255 })
     .withMessage('Company name must be between 2 and 255 characters')
+    .trim(),
+  body('job_title')
+    .notEmpty()
+    .isLength({ min: 2, max: 255 })
+    .withMessage('Job title must be between 2 and 255 characters')
     .trim(),
   body('description')
     .notEmpty()
@@ -182,8 +193,8 @@ router.put('/:id', [
       });
     }
 
-    const { company_name, description, application_link } = req.body;
-    await job.update({ company_name, description, application_link });
+    const { company_name, job_title, description, application_link } = req.body;
+    await job.update({ company_name, job_title, description, application_link });
 
     res.status(200).json({
       success: true,
