@@ -108,8 +108,8 @@ router.post('/', [
     .trim(),
   body('description')
     .notEmpty()
-    .isLength({ min: 3, max: 2000 })
-    .withMessage('Job description must be between 3 and 2000 characters')
+    .isLength({ min: 3, max: 5000 })
+    .withMessage('Job description must be between 3 and 5000 characters')
     .trim(),
   body('application_link')
     .optional({ checkFalsy: true })
@@ -164,8 +164,8 @@ router.put('/:id', [
     .trim(),
   body('description')
     .notEmpty()
-    .isLength({ min: 3, max: 2000 })
-    .withMessage('Job description must be between 3 and 2000 characters')
+    .isLength({ min: 3, max: 5000 })
+    .withMessage('Job description must be between 3 and 5000 characters')
     .trim(),
   body('application_link')
     .optional({ checkFalsy: true })
